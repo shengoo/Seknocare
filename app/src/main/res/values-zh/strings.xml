@@ -1,12 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Seknocare</string>
 
     <!-- MainActivity -->
-    <string name="bluetooth_error">Cannot open bluetooth.</string>
-    <string name="connect_reminder">Please connect to device.</string>
-    <string name="increase_reminder">Are you sure?</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
+    <!--<string name="bluetooth_error">无法打开手机蓝牙，请确认手机是否有蓝牙功能！</string>-->
+    <!--<string name="connect_reminder">请先连接蓝牙。。。</string>-->
+    <!--<string name="increase_reminder">强度已经大于5，确认还要增大吗</string>-->
+    <!--<string name="yes">继续加大</string>-->
+    <!--<string name="no">强度正好</string>-->
 
 
     <!--  DeviceListActivity -->
@@ -18,9 +19,4 @@
     <string name="title_other_devices">Other Available Devices</string>
     <string name="button_scan">Scan for devices</string>
     <string name="button_cancel">Cancel</string>
-
-
-    <!-- time picker -->
-    <string name="setting">Set</string>
-    <string name="cancel">Cancel</string>
 </resources>
