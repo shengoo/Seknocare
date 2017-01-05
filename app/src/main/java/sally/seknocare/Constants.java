@@ -5,4 +5,7 @@ package sally.seknocare;
  */
 
 public interface Constants {
+
+    public int PermissionRequestCode = 1024;
+
 }
