@@ -66,7 +66,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private int power = 0;
 
     public static boolean TimeStart = false;
-    private Timer timer = new Timer();
+    private Timer timer;
+    private Counter counter;
+
+    private ShowContent content = new ShowContent();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,34 +139,39 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         }.start();
 
-        timer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                int Hour = ShowContent.Instance().getHour();
-                int Minute = ShowContent.Instance().getMinute();
-
-                if (!TimeStart) return;
-
-                ShowContent.Instance().setTime(Hour + ":" + Minute);
-                Message msg = new Message();
-                msg.what = 0;
-
-                handler.sendMessage(msg);
-
-                if (Minute-- == 0) {
-                    Hour--;
-                    Minute = 59;
-                }
-                if (Hour == -1) {
-                    TimeStart = false;
-                }
-                ShowContent.Instance().setHour(Hour);
-                ShowContent.Instance().setMinute(Minute);
-            }
-
-        }, 1000*60, 1000*60);
+//        timer.schedule(new TimerTask() {
+//
+//            @Override
+//            public void run() {
+//                // TODO Auto-generated method stub
+//                content.minus();
+////                int Hour = content.getHour();
+////                int Minute = content.getMinute();
+//
+//                if (!TimeStart) return;
+//
+////                content.setTime(Hour + ":" + Minute);
+//                Message msg = new Message();
+//                msg.what = 0;
+//
+//                handler.sendMessage(msg);
+//                if(content.getMinute() == 0
+//                        && content.getSecond() == 0){
+//                    Toast.makeText(getApplicationContext(),content.getShowContent(),Toast.LENGTH_SHORT).show();
+//                }
+//
+////                if (Minute-- == 0) {
+////                    Hour--;
+////                    Minute = 59;
+////                }
+////                if (Hour == -1) {
+////                    TimeStart = false;
+////                }
+////                content.setHour(Hour);
+////                content.setMinute(Minute);
+//            }
+//
+//        }, 1000, 1000*60);
 
     }
 
@@ -223,8 +231,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         _socket.connect();
                         Toast.makeText(this, "连接"+_device.getName()+"成功！", Toast.LENGTH_SHORT).show();
                         //btn.setText("断开");
-                        ShowContent.Instance().setBluetoothState(true);
-                        MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                        content.setBluetoothState(true);
+                        MainActivity.textViewMode.setText(content.getShowContent());
 
                         sendMessage(0xE0); //
                     }catch(IOException e){
@@ -299,6 +307,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     msg.what = 1;
                     handler.sendMessage(msg);
                 }catch(IOException e){
+
                 }
             }
         }
@@ -310,15 +319,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
             super.handleMessage(msg);
             //dis.setText(smsg);   //显示数据
             //Toast.makeText(getApplicationContext(), R.string.connect_reminder, Toast.LENGTH_SHORT).show();
-            //ShowContent.Instance().setTime(smsg);
+            //content.setTime(smsg);
             if (msg.what == 1) {
                 int Power = (int)smsg.toCharArray()[0];
                 if (Power > 100) Power = 100;
 
-                ShowContent.Instance().setPower(Power);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setPower(Power);
+                MainActivity.textViewMode.setText(content.getShowContent());
             } else if (msg.what == 0){
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                MainActivity.textViewMode.setText(content.getShowContent());
             }
         }
     };
@@ -335,95 +344,117 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 //msg = Toast.makeText(getApplicationContext(), R.string.press_cn, Toast.LENGTH_SHORT);
                 //msg.show();
                 sendMessage(0xC1);
-                ShowContent.Instance().setMode("PRESS");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("PRESS");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.nip: //0xA8
                 sendMessage(0xA8);
-                ShowContent.Instance().setMode("NIP");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("NIP");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.prick: //0xA2
                 sendMessage(0xA2);
-                ShowContent.Instance().setMode("PRICK");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("PRICK");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.rap: //0xA7
                 sendMessage(0xA7);
-                ShowContent.Instance().setMode("RAP");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("RAP");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.stroke: //0xA3
                 sendMessage(0xA3);
-                ShowContent.Instance().setMode("STROKE");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("STROKE");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.flutter: //0xA6
                 sendMessage(0xA6);
-                ShowContent.Instance().setMode("FLUTTER");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("FLUTTER");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.scrape: //0xA4
                 sendMessage(0xA4);
-                ShowContent.Instance().setMode("SCRAPE");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("SCRAPE");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.pinch: //0xA5
                 sendMessage(0xA5);
-                ShowContent.Instance().setMode("PINCH");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("PINCH");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.auto: //0xC0
                 sendMessage(0xC0);
-                ShowContent.Instance().setMode("AUTO");
-                ShowContent.Instance().setStrang(0);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setMode("AUTO");
+                content.setStrang(0);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.timer:
-                TimePickerDialog timeDialog = new TimePickerDialog(this);
-                timeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                timeDialog.show();
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.timer_title)
+                        .setItems(R.array.time_array, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                int minute = (which+1)*10;
+                                content.setMinute(minute);
+                                content.setSecond(0);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        textViewMode.setText(content.getShowContent());
+                                    }
+                                });
+                                if(TimeStart){
+                                    counter.cancel();
+                                    timer.cancel();
+                                    TimeStart = false;
+                                }
+                                timer = new Timer();
+                                counter = new Counter();
+                                timer.schedule(counter,1000,1000);
+                                TimeStart = true;
+                            }
+                        }).show();
                 break;
             case R.id.increase:
-                if (ShowContent.Instance().getTime().equals("0:0")) break;
-                if (ShowContent.Instance().getStrang() == 10) break;
+                if (content.getTime().equals("0:0")) break;
+                if (content.getStrang() == 10) break;
 
-                if (ShowContent.Instance().getStrang() >= 5) {
-                    RemainderDialog remainderDialog = new RemainderDialog(this);
-                    remainderDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    remainderDialog.show();
+                if (content.getStrang() >= 5) {
+//                    RemainderDialog remainderDialog = new RemainderDialog(this);
+//                    remainderDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                    remainderDialog.show();
                     break;
                 }
 
-                sendMessage(0xF2 + ShowContent.Instance().getStrang());
+                sendMessage(0xF2 + content.getStrang());
 
-                ShowContent.Instance().setStrang(ShowContent.Instance().getStrang() + 1);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setStrang(content.getStrang() + 1);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.turnoff:
-                ShowContent.Instance().setTime("0:0");
-                ShowContent.Instance().setStrang(0);
+                content.setTime("0:0");
+                content.setStrang(0);
 
                 sendMessage(0xB2);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                MainActivity.textViewMode.setText(content.getShowContent());
 
                 finish();
                 break;
             case R.id.decrease:
-                if (ShowContent.Instance().getTime().equals("0:0")) break;
-                if (ShowContent.Instance().getStrang() == 0) break;
-                sendMessage(0xF1 + ShowContent.Instance().getStrang() - 1);
+                if (content.getTime().equals("0:0")) break;
+                if (content.getStrang() == 0) break;
+                sendMessage(0xF1 + content.getStrang() - 1);
 
-                ShowContent.Instance().setStrang(ShowContent.Instance().getStrang() - 1);
-                MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+                content.setStrang(content.getStrang() - 1);
+                MainActivity.textViewMode.setText(content.getShowContent());
                 break;
             case R.id.bluetooth:
                 if(_bluetooth.isEnabled()==false){  //如果蓝牙服务不可用则提示
@@ -446,8 +477,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	    	    	_socket = null;
 	    	    	bRun = false;
 
-	    	    	ShowContent.Instance().setBluetoothState(false);
-	    	    	MainActivity.textViewMode.setText(ShowContent.Instance().getShowContent());
+	    	    	content.setBluetoothState(false);
+	    	    	MainActivity.textViewMode.setText(content.getShowContent());
 	    	    	//btn.setText("连接");
 	    	    }catch(IOException e){}
 	    	    */
@@ -478,4 +509,56 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } catch (IOException e){
         }
     }
+
+    public void updateText(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textViewMode.setText(content.getShowContent());
+            }
+        });
+    }
+
+    class Counter extends TimerTask{
+
+        @Override
+        public void run() {
+            System.out.println("run");
+            content.minus();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textViewMode.setText(content.getShowContent());
+                }
+            });
+//            updateText();
+//                int Hour = content.getHour();
+//                int Minute = content.getMinute();
+
+//            if (!TimeStart) return;
+
+//                content.setTime(Hour + ":" + Minute);
+            Message msg = new Message();
+            msg.what = 0;
+
+            handler.sendMessage(msg);
+            if(content.getMinute() == 0
+                    && content.getSecond() == 0){
+                timer.cancel();
+            }
+//            Toast.makeText(getApplicationContext(),content.getShowContent(),Toast.LENGTH_SHORT).show();
+
+//                if (Minute-- == 0) {
+//                    Hour--;
+//                    Minute = 59;
+//                }
+//                if (Hour == -1) {
+//                    TimeStart = false;
+//                }
+//                content.setHour(Hour);
+//                content.setMinute(Minute);
+        }
+    }
+
+
 }

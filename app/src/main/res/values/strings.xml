@@ -5,7 +5,7 @@
     <!-- MainActivity -->
     <string name="bluetooth_error">Cannot open bluetooth.</string>
     <string name="connect_reminder">Please connect to device.</string>
-    <string name="increase_reminder">Are you sure?</string>
+    <string name="increase_reminder">Intensity has been greater than 5, are you continue?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
@@ -24,6 +24,7 @@
     <!-- time picker -->
     <string name="setting">Set</string>
     <string name="cancel">Cancel</string>
+    <string name="timer_title">Set time</string>
     <string name="permission_denied">please grant permission for location to ensure bluetooth works properly</string>
     <string name="permission_required">Permission required.</string>
 </resources>

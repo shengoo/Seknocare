@@ -11,11 +11,21 @@ public class ShowContent {
     private String Time;
     private int Hour;
     private int Minute;
+
+    public int getSecond() {
+        return second;
+    }
+
+    public void setSecond(int second) {
+        this.second = second;
+    }
+
+    int second = 0;
     private boolean BluetoothState;
 
     private static ShowContent _Instance = null;
 
-    private ShowContent() {
+    public ShowContent() {
         Time = "0:0";
         Power = 0;
         Mode = "PRESS";
@@ -41,15 +51,19 @@ public class ShowContent {
         Minute = minute;
     }
 
-    public static ShowContent Instance() {
-        if (_Instance == null) {
-            _Instance = new ShowContent();
-        }
-        return _Instance;
-    }
+//    public static ShowContent Instance() {
+//        if (_Instance == null) {
+//            _Instance = new ShowContent();
+//        }
+//        return _Instance;
+//    }
 
     public String getShowContent() {
-        return Time + "   " + Mode + ":" + Strang + "   Power:" + Power + "%   " + (BluetoothState ? "Connect" : "Disconnect");
+        return Time + "   " +
+                Mode + ":" +
+                Strang + "   Power:" +
+                Power + "%   " +
+                (BluetoothState ? "Connect" : "Disconnect");
     }
 
 
@@ -64,25 +78,46 @@ public class ShowContent {
     public String getMode() {
         return Mode;
     }
+
     public void setMode(String mode) {
         Mode = mode;
     }
+
     public int getPower() {
         return Power;
     }
+
     public void setPower(int power) {
         Power = power;
     }
+
     public int getStrang() {
         return Strang;
     }
+
     public void setStrang(int strang) {
         Strang = strang;
     }
+
     public String getTime() {
         return Time;
     }
+
     public void setTime(String time) {
         Time = time;
+    }
+
+    public void minus(){
+        System.out.println("m:" + Minute + " s:" + second);
+        if(second == 0){
+            if(Minute == 0){
+                return;
+            }
+            second = 59;
+            Minute--;
+        }else {
+            second--;
+        }
+        setTime(Minute + ":" + second);
     }
 }
