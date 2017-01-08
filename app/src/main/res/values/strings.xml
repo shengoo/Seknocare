@@ -27,4 +27,5 @@
     <string name="timer_title">Set time</string>
     <string name="permission_denied">please grant permission for location to ensure bluetooth works properly</string>
     <string name="permission_required">Permission required.</string>
+    <string name="intensity">Intensity</string>
 </resources>

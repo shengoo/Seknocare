@@ -31,7 +31,6 @@ import java.util.UUID;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
-    private final static int REQUEST_CONNECT_DEVICE = 1;
     private final static String MY_UUID = "00001101-0000-1000-8000-00805F9B34FB";
     private InputStream is;
 
@@ -58,8 +57,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //from android 6.0, we will need to check permission when running.
         checkPermission();
-
 
         Button btnPress = (Button) findViewById(R.id.press);
         btnPress.setOnClickListener(this);
@@ -103,19 +102,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Button btnBluetooth = (Button) findViewById(R.id.bluetooth);
         btnBluetooth.setOnClickListener(this);
 
-        textViewMode = (TextView)findViewById(R.id.mode_time_level);
+        textViewMode = (TextView) findViewById(R.id.mode_time_level);
 
         //如果打开本地蓝牙设备不成功，提示信息，结束程序
-        if (_bluetooth == null){
+        if (_bluetooth == null) {
             Toast.makeText(this, R.string.bluetooth_error, Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
         // 设置设备可以被搜索
-        new Thread(){
-            public void run(){
-                if(!_bluetooth.isEnabled()){
+        new Thread() {
+            public void run() {
+                if (!_bluetooth.isEnabled()) {
                     _bluetooth.enable();
                 }
             }
@@ -125,30 +124,30 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     @TargetApi(23)
-    private void checkPermission(){
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.PermissionRequestCode);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.PermissionRequestCode);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == Constants.PermissionRequestCode){
+        if (requestCode == Constants.PermissionRequestCode) {
             boolean permissionGranted = true;
-            for (int result : grantResults){
-                if(result != PackageManager.PERMISSION_GRANTED){
-//                    Toast.makeText(this, R.string.permission_denied,Toast.LENGTH_LONG).show();
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
                     permissionGranted = false;
                 }
             }
-            if(!permissionGranted){
+            if (!permissionGranted) {
                 AlertDialog.Builder build = new AlertDialog.Builder(this);
                 build.setMessage(R.string.permission_denied);
                 build.setTitle(R.string.permission_required);
                 build.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        // ask for permission again
                         checkPermission();
                     }
                 });
@@ -159,8 +158,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     //接收活动结果，响应startActivityForResult()
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode){
-            case REQUEST_CONNECT_DEVICE:     //连接结果，由DeviceListActivity设置返回
+        switch (requestCode) {
+            case Constants.REQUEST_CONNECT_DEVICE:     //连接结果，由DeviceListActivity设置返回
                 // 响应返回结果
                 if (resultCode == Activity.RESULT_OK) {   //连接成功，由DeviceListActivity设置返回
                     // MAC地址，由DeviceListActivity设置返回
@@ -170,26 +169,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     BluetoothDevice _device = _bluetooth.getRemoteDevice(address);
 
                     // 用服务号得到socket
-                    try{
+                    try {
                         _socket = _device.createRfcommSocketToServiceRecord(UUID.fromString(MY_UUID));
-                    }catch(IOException e){
+                    } catch (IOException e) {
                         Toast.makeText(this, "连接失败！", Toast.LENGTH_SHORT).show();
                     }
                     //连接socket
-                    try{
+                    try {
                         _socket.connect();
-                        Toast.makeText(this, "连接"+ _device.getName()+"成功！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "连接" + _device.getName() + "成功！", Toast.LENGTH_SHORT).show();
                         //btn.setText("断开");
                         content.setBluetoothState(true);
                         updateText();
 
                         sendMessage(0xE0); //
-                    }catch(IOException e){
-                        try{
+                    } catch (IOException e) {
+                        try {
                             Toast.makeText(this, "连接失败！", Toast.LENGTH_SHORT).show();
                             _socket.close();
                             _socket = null;
-                        }catch(IOException ee){
+                        } catch (IOException ee) {
                             Toast.makeText(this, "连接失败！", Toast.LENGTH_SHORT).show();
                         }
 
@@ -197,28 +196,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     }
 
                     //打开接收线程
-                    try{
+                    try {
                         is = _socket.getInputStream();   //得到蓝牙数据输入流
-                    }catch(IOException e){
+                    } catch (IOException e) {
                         Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if(!bThread){
+                    if (!bThread) {
                         ReadThread.start();
-                        bThread=true;
-                    }else{
+                        bThread = true;
+                    } else {
                         bRun = true;
                     }
                 }
                 break;
-            default:break;
+            default:
+                break;
         }
     }
 
     //接收数据线程
-    Thread ReadThread=new Thread(){
+    Thread ReadThread = new Thread() {
 
-        public void run(){
+        public void run() {
             int num;
             byte[] buffer = new byte[1024];
             byte[] buffer_new = new byte[1024];
@@ -226,35 +226,36 @@ public class MainActivity extends Activity implements View.OnClickListener {
             int n;
             bRun = true;
             //接收线程
-            while(true){
-                try{
-                    while(is.available()==0){
-                        while(!bRun){}
+            while (true) {
+                try {
+                    while (is.available() == 0) {
+                        while (!bRun) {
+                        }
                     }
-                    while(true){
+                    while (true) {
                         num = is.read(buffer);         //读入数据
-                        n=0;
+                        n = 0;
 
-                        String s0 = new String(buffer,0,num);
-                        fmsg+=s0;    //保存收到数据
-                        for(i=0;i<num;i++){
-                            if((buffer[i] == 0x0d)&&(buffer[i+1]==0x0a)){
+                        String s0 = new String(buffer, 0, num);
+                        fmsg += s0;    //保存收到数据
+                        for (i = 0; i < num; i++) {
+                            if ((buffer[i] == 0x0d) && (buffer[i + 1] == 0x0a)) {
                                 buffer_new[n] = 0x0a;
                                 i++;
-                            }else{
+                            } else {
                                 buffer_new[n] = buffer[i];
                             }
                             n++;
                         }
-                        smsg = new String(buffer_new,0,n);   //写入接收缓存
+                        smsg = new String(buffer_new, 0, n);   //写入接收缓存
                         power = buffer_new[n];
-                        if(is.available()==0)break;  //短时间没有数据才跳出进行显示
+                        if (is.available() == 0) break;  //短时间没有数据才跳出进行显示
                     }
                     //发送显示消息，进行显示刷新
                     Message msg = new Message();
                     msg.what = 1;
                     handler.sendMessage(msg);
-                }catch(IOException ignored){
+                } catch (IOException ignored) {
 
                 }
             }
@@ -262,19 +263,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
     };
 
     //消息处理队列
-    Handler handler= new Handler(){
-        public void handleMessage(Message msg){
+    Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
             super.handleMessage(msg);
             //dis.setText(smsg);   //显示数据
             //Toast.makeText(getApplicationContext(), R.string.connect_reminder, Toast.LENGTH_SHORT).show();
             //content.setTime(smsg);
             if (msg.what == 1) {
-                int Power = (int)smsg.toCharArray()[0];
+                int Power = (int) smsg.toCharArray()[0];
                 if (Power > 100) Power = 100;
 
                 content.setPower(Power);
                 updateText();
-            } else if (msg.what == 0){
+            } else if (msg.what == 0) {
                 updateText();
             }
         }
@@ -344,47 +345,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 updateText();
                 break;
             case R.id.timer:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.timer_title)
-                        .setItems(R.array.time_array, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                int minute = (which+1)*10;
-                                content.setMinute(minute);
-                                content.setSecond(0);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        textViewMode.setText(content.getShowContent());
-                                    }
-                                });
-                                if(TimeStart){
-                                    counter.cancel();
-                                    timer.cancel();
-                                    TimeStart = false;
-                                }
-                                timer = new Timer();
-                                counter = new Counter();
-                                timer.schedule(counter,1000,1000);
-                                TimeStart = true;
-                            }
-                        }).show();
+                setTime();
                 break;
             case R.id.increase:
-                if (content.getTime().equals("0:0")) break;
-                if (content.getStrang() == 10) break;
-
-                if (content.getStrang() >= 5) {
-//                    RemainderDialog remainderDialog = new RemainderDialog(this);
-//                    remainderDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                    remainderDialog.show();
-                    break;
-                }
-
-                sendMessage(0xF2 + content.getStrang());
-
-                content.setStrang(content.getStrang() + 1);
-                updateText();
+                increaseIntensity();
                 break;
             case R.id.turnoff:
                 content.setTime("0:0");
@@ -396,27 +360,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 finish();
                 break;
             case R.id.decrease:
-                if (content.getTime().equals("0:0")) break;
-                if (content.getStrang() == 0) break;
-                sendMessage(0xF1 + content.getStrang() - 1);
-
-                content.setStrang(content.getStrang() - 1);
-                updateText();
+                decreaseIntensity();
                 break;
             case R.id.bluetooth:
-                if(!_bluetooth.isEnabled()){  //如果蓝牙服务不可用则提示
+                if (!_bluetooth.isEnabled()) {  //如果蓝牙服务不可用则提示
                     Toast.makeText(this, " Bluetooth Opening...", Toast.LENGTH_LONG).show();
                     return;
                 }
-                if(_socket==null){
+                if (_socket == null) {
                     Intent serverIntent = new Intent(this, DeviceListActivity.class); //跳转程序设置
-                    startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);  //设置返回宏定义
-                }
-                else{
+                    startActivityForResult(serverIntent, Constants.REQUEST_CONNECT_DEVICE);  //设置返回宏定义
+                } else {
                     Toast.makeText(this, " Bluetooth Connected", Toast.LENGTH_LONG).show();
                     break;
                     //关闭连接socket
-	    		/*
+                /*
 	    	    try{
 
 	    	    	is.close();
@@ -434,18 +392,108 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
 
-
     }
 
-    public void onDestroy(){
+    private void increaseIntensity() {
+        if (content.getTime().equals("0:0")) {
+            return;
+        }
+        if (content.getStrang() == 10) {
+            return;
+        }
+
+        if (content.getStrang() >= 5) {
+            AlertDialog.Builder build = new AlertDialog.Builder(this);
+            build.setMessage(R.string.increase_reminder);
+            build.setTitle(R.string.intensity);
+            build.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    sendMessage(0xF2 + content.getStrang());
+                    content.setStrang(content.getStrang() + 1);
+                    updateText();
+                }
+            });
+            build.setNegativeButton(R.string.no, null);
+            build.create().show();
+            return;
+        }
+
+        sendMessage(0xF2 + content.getStrang());
+
+        content.setStrang(content.getStrang() + 1);
+        updateText();
+    }
+
+    private void decreaseIntensity() {
+        if (content.getTime().equals("0:0")) {
+            return;
+        }
+        if (content.getStrang() == 0) {
+            return;
+        }
+        sendMessage(0xF1 + content.getStrang() - 1);
+
+        content.setStrang(content.getStrang() - 1);
+        updateText();
+    }
+
+    private void setTime() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.timer_title)
+                .setItems(R.array.time_array, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int minute = (which + 1) * 10;
+                        content.setMinute(minute);
+                        content.setSecond(0);
+                        System.out.println(content.getShowContent());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                textViewMode.setText(content.getShowContent());
+                            }
+                        });
+                        if (TimeStart) {
+                            if (counter != null)
+                                counter.cancel();
+                            if (timer != null)
+                                timer.cancel();
+                            TimeStart = false;
+                        }
+                        timer = new Timer();
+                        counter = new Counter();
+                        timer.schedule(counter, 1000, 1000);
+                        TimeStart = true;
+                    }
+                }).show();
+    }
+
+    public void onDestroy() {
         super.onDestroy();
-        if(_socket!=null)  //关闭连接socket
-            try{
+        if (counter != null) {
+            try {
+                counter.cancel();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (timer != null) {
+            try {
+                timer.cancel();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (_socket != null)  //关闭连接socket
+            try {
                 is.close();
                 _socket.close();
                 _socket = null;
                 bRun = false;
-            }catch(IOException ignored){}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         //	_bluetooth.disable();  //关闭蓝牙服务
     }
 
@@ -453,11 +501,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         try {
             OutputStream os = _socket.getOutputStream();
             os.write(msg);
-        } catch (IOException ignored){
+        } catch (IOException ignored) {
         }
     }
 
-    public void updateText(){
+    public void updateText() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -466,7 +514,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    class Counter extends TimerTask{
+    class Counter extends TimerTask {
 
         @Override
         public void run() {
@@ -489,9 +537,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             msg.what = 0;
 
             handler.sendMessage(msg);
-            if(content.getMinute() == 0
-                    && content.getSecond() == 0){
+            if (content.getMinute() == 0
+                    && content.getSecond() == 0) {
                 timer.cancel();
+                sendMessage(0xB2);
             }
 //            Toast.makeText(getApplicationContext(),content.getShowContent(),Toast.LENGTH_SHORT).show();
 

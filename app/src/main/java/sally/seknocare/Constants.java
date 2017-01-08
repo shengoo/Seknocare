@@ -4,8 +4,10 @@ package sally.seknocare;
  * Created by UC206612 on 2016/12/23.
  */
 
-public interface Constants {
+interface Constants {
 
-    public int PermissionRequestCode = 1024;
+    int PermissionRequestCode = 1024;
+
+    int REQUEST_CONNECT_DEVICE = 2;
 
 }
