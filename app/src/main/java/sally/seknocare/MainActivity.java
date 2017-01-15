@@ -368,12 +368,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     Toast.makeText(this, " Bluetooth Opening...", Toast.LENGTH_LONG).show();
                     return;
                 }
-                if (_socket == null) {
+//                if (_socket == null) {
                     Intent serverIntent = new Intent(this, DeviceListActivity.class); //跳转程序设置
                     startActivityForResult(serverIntent, Constants.REQUEST_CONNECT_DEVICE);  //设置返回宏定义
-                } else {
-                    Toast.makeText(this, " Bluetooth Connected", Toast.LENGTH_LONG).show();
-                    break;
+//                } else {
+//                    Toast.makeText(this, " Bluetooth Connected", Toast.LENGTH_LONG).show();
+//                    break;
                     //关闭连接socket
                 /*
 	    	    try{
@@ -388,7 +388,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	    	    	//btn.setText("连接");
 	    	    }catch(IOException e){}
 	    	    */
-                }
+//                }
                 break;
         }
 
