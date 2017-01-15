@@ -198,6 +198,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     //打开接收线程
                     try {
                         is = _socket.getInputStream();   //得到蓝牙数据输入流
+                        start(10);
                     } catch (IOException e) {
                         Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
                         return;
@@ -294,55 +295,55 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 sendMessage(0xC1);
                 content.setMode("PRESS");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.nip: //0xA8
                 sendMessage(0xA8);
                 content.setMode("NIP");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.prick: //0xA2
                 sendMessage(0xA2);
                 content.setMode("PRICK");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.rap: //0xA7
                 sendMessage(0xA7);
                 content.setMode("RAP");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.stroke: //0xA3
                 sendMessage(0xA3);
                 content.setMode("STROKE");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.flutter: //0xA6
                 sendMessage(0xA6);
                 content.setMode("FLUTTER");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.scrape: //0xA4
                 sendMessage(0xA4);
                 content.setMode("SCRAPE");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.pinch: //0xA5
                 sendMessage(0xA5);
                 content.setMode("PINCH");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.auto: //0xC0
                 sendMessage(0xC0);
                 content.setMode("AUTO");
                 content.setStrang(0);
-                updateText();
+                start(10);
                 break;
             case R.id.timer:
                 setTime();
@@ -445,28 +446,27 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         int minute = (which + 1) * 10;
-                        content.setMinute(minute);
-                        content.setSecond(0);
-                        System.out.println(content.getShowContent());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                textViewMode.setText(content.getShowContent());
-                            }
-                        });
-                        if (TimeStart) {
-                            if (counter != null)
-                                counter.cancel();
-                            if (timer != null)
-                                timer.cancel();
-                            TimeStart = false;
-                        }
-                        timer = new Timer();
-                        counter = new Counter();
-                        timer.schedule(counter, 1000, 1000);
-                        TimeStart = true;
+                        start(minute);
                     }
                 }).show();
+    }
+
+    private void start(int minute){
+        content.setMinute(minute);
+        content.setSecond(1);
+        System.out.println(content.getShowContent());
+        updateText();
+        if (TimeStart) {
+            if (counter != null)
+                counter.cancel();
+            if (timer != null)
+                timer.cancel();
+            TimeStart = false;
+        }
+        timer = new Timer();
+        counter = new Counter();
+        timer.schedule(counter, 0, 1000);
+        TimeStart = true;
     }
 
     public void onDestroy() {
