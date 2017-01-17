@@ -18,6 +18,7 @@ public class ShowContent {
 
     public void setSecond(int second) {
         this.second = second;
+        setTime(Minute + ":" + second);
     }
 
     int second = 0;
@@ -28,7 +29,7 @@ public class ShowContent {
     public ShowContent() {
         Time = "0:0";
         Power = 0;
-        Mode = "PRESS";
+        Mode = "AUTO";
         Strang = 0;
         Hour = 0;
         Minute = 0;
@@ -49,6 +50,7 @@ public class ShowContent {
 
     public void setMinute(int minute) {
         Minute = minute;
+        setTime(Minute + ":" + second);
     }
 
 //    public static ShowContent Instance() {
@@ -59,10 +61,10 @@ public class ShowContent {
 //    }
 
     public String getShowContent() {
-        return Time + "   " +
-                Mode + ":" +
-                Strang + "   Power:" +
-                Power + "%   " +
+        return "Time:" + Time + "   " +
+                "Mode:" + Mode + "  " +
+                "Strenth:" + Strang + "  " +
+                "Power:" + Power + "%   " +
                 (BluetoothState ? "Connect" : "Disconnect");
     }
 

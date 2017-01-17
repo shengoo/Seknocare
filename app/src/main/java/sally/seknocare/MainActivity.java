@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -180,9 +179,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         Toast.makeText(this, "连接" + _device.getName() + "成功！", Toast.LENGTH_SHORT).show();
                         //btn.setText("断开");
                         content.setBluetoothState(true);
-                        updateText();
-
-                        sendMessage(0xE0); //
+//                        updateText();
+                        sendMessage(0xC0);// set auto
+//                        sendMessage(0xE0); //
                     } catch (IOException e) {
                         try {
                             Toast.makeText(this, "连接失败！", Toast.LENGTH_SHORT).show();
@@ -198,7 +197,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     //打开接收线程
                     try {
                         is = _socket.getInputStream();   //得到蓝牙数据输入流
-                        start(10);
+//                        start(10);
+                        setTime(10);
+
                     } catch (IOException e) {
                         Toast.makeText(this, "接收数据失败！", Toast.LENGTH_SHORT).show();
                         return;
@@ -269,7 +270,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             super.handleMessage(msg);
             //dis.setText(smsg);   //显示数据
             //Toast.makeText(getApplicationContext(), R.string.connect_reminder, Toast.LENGTH_SHORT).show();
-            //content.setTime(smsg);
+            //content.showSetTimeDialog(smsg);
             if (msg.what == 1) {
                 int Power = (int) smsg.toCharArray()[0];
                 if (Power > 100) Power = 100;
@@ -295,58 +296,58 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 sendMessage(0xC1);
                 content.setMode("PRESS");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.nip: //0xA8
                 sendMessage(0xA8);
                 content.setMode("NIP");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.prick: //0xA2
                 sendMessage(0xA2);
                 content.setMode("PRICK");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.rap: //0xA7
                 sendMessage(0xA7);
                 content.setMode("RAP");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.stroke: //0xA3
                 sendMessage(0xA3);
                 content.setMode("STROKE");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.flutter: //0xA6
                 sendMessage(0xA6);
                 content.setMode("FLUTTER");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.scrape: //0xA4
                 sendMessage(0xA4);
                 content.setMode("SCRAPE");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.pinch: //0xA5
                 sendMessage(0xA5);
                 content.setMode("PINCH");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.auto: //0xC0
                 sendMessage(0xC0);
                 content.setMode("AUTO");
                 content.setStrang(0);
-                start(10);
+                setTime(10);
                 break;
             case R.id.timer:
-                setTime();
+                showSetTimeDialog();
                 break;
             case R.id.increase:
                 increaseIntensity();
@@ -419,6 +420,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             build.create().show();
             return;
         }
+        if(content.getStrang() == 0){
+            start();
+        }
 
         sendMessage(0xF2 + content.getStrang());
 
@@ -439,23 +443,27 @@ public class MainActivity extends Activity implements View.OnClickListener {
         updateText();
     }
 
-    private void setTime() {
+    private void showSetTimeDialog() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.timer_title)
                 .setItems(R.array.time_array, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         int minute = (which + 1) * 10;
-                        start(minute);
+//                        start(minute);
+                        setTime(minute);
                     }
                 }).show();
     }
 
-    private void start(int minute){
+    private void setTime(int minute){
         content.setMinute(minute);
-        content.setSecond(1);
+        content.setSecond(0);
         System.out.println(content.getShowContent());
         updateText();
+    }
+
+    private void start(){
         if (TimeStart) {
             if (counter != null)
                 counter.cancel();
@@ -465,8 +473,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
         timer = new Timer();
         counter = new Counter();
-        timer.schedule(counter, 0, 1000);
+        timer.schedule(counter, 1000, 1000);
         TimeStart = true;
+    }
+
+    private void start(int minute){
+        content.setMinute(minute);
+        content.setSecond(0);
+        System.out.println(content.getShowContent());
+        updateText();
+        start();
     }
 
     public void onDestroy() {
@@ -532,7 +548,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 //            if (!TimeStart) return;
 
-//                content.setTime(Hour + ":" + Minute);
+//                content.showSetTimeDialog(Hour + ":" + Minute);
             Message msg = new Message();
             msg.what = 0;
 
