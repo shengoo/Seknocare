@@ -181,7 +181,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         content.setBluetoothState(true);
 //                        updateText();
                         sendMessage(0xC0);// set auto
-//                        sendMessage(0xE0); //
+                        sendMessage(0xE0); // show bluetooth
                     } catch (IOException e) {
                         try {
                             Toast.makeText(this, "连接失败！", Toast.LENGTH_SHORT).show();
@@ -296,54 +296,63 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 sendMessage(0xC1);
                 content.setMode("PRESS");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.nip: //0xA8
                 sendMessage(0xA8);
                 content.setMode("NIP");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.prick: //0xA2
                 sendMessage(0xA2);
                 content.setMode("PRICK");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.rap: //0xA7
                 sendMessage(0xA7);
                 content.setMode("RAP");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.stroke: //0xA3
                 sendMessage(0xA3);
                 content.setMode("STROKE");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.flutter: //0xA6
                 sendMessage(0xA6);
                 content.setMode("FLUTTER");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.scrape: //0xA4
                 sendMessage(0xA4);
                 content.setMode("SCRAPE");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.pinch: //0xA5
                 sendMessage(0xA5);
                 content.setMode("PINCH");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.auto: //0xC0
                 sendMessage(0xC0);
                 content.setMode("AUTO");
                 content.setStrang(0);
+                stop();
                 setTime(10);
                 break;
             case R.id.timer:
@@ -461,6 +470,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
         content.setSecond(0);
         System.out.println(content.getShowContent());
         updateText();
+    }
+
+    private void stop(){
+        sendMessage(0xB2);
+        if (TimeStart) {
+            if (counter != null)
+                counter.cancel();
+            if (timer != null)
+                timer.cancel();
+            TimeStart = false;
+        }
     }
 
     private void start(){
