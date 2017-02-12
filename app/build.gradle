@@ -12,7 +12,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "25.0.1"
     defaultConfig {
-        applicationId "sally.seknocare"
+        applicationId "sally.seknocare.es"
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
