@@ -179,6 +179,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         Toast.makeText(this, "连接" + _device.getName() + "成功！", Toast.LENGTH_SHORT).show();
                         //btn.setText("断开");
                         content.setBluetoothState(true);
+                        content.setStrang(0);
 //                        updateText();
                         sendMessage(0xC0);// set auto
                         sendMessage(0xE0); // show bluetooth
