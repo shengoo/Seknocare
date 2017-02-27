@@ -498,13 +498,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         TimeStart = true;
     }
 
-    private void start(int minute){
-        content.setMinute(minute);
-        content.setSecond(0);
-        System.out.println(content.getShowContent());
-        updateText();
-        start();
-    }
 
     public void onDestroy() {
         super.onDestroy();
